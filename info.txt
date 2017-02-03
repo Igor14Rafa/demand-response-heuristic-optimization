@@ -1,0 +1,2 @@
+prices_per_hour - File with the prices per hour in the electricity market. The day used for this prices is 02.05.2015 (02/Maio/2015 - Greatest consumption day).
+devices_consumption - File with the power consumption per hour of each electric device used in the algorithm for the simulation.

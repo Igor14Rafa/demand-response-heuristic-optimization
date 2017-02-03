@@ -1,5 +1,6 @@
 from Chromosome import *
 from copy import *
+from math import *
 
 
 
@@ -12,43 +13,45 @@ class GA():
         self.mutation_chance = mut_chance
         self.chromosome_size = chrom_size
         self.tournament_size = tourn_size
-	self.num_devices = n_dev
-        self.prices = {}
+	    self.num_devices = n_dev
+        self.prices = []
+        self.devices_consumption = []
         self.population = []
         self.selection = selection
         self.error = 0.01
 
-    """ Creates the dict "prices" with the info of the problem,
-        given by the file "filename".
+    """ Reads a set of float values from a given file and stores it in a list.
     """
-    def get_prices(self, filename):
-        f = open(filename, "r")
-        key = 1
+    def read_float_file(self, filename, values):
+        f = open(filename, 'r')
         for line in f:
-            self.prices[key] = map(int, line.split())
-            key += 1
+            values.append(float(line))
         f.close()
 
     """ Initialize the population."""
     def init_pop(self):
         for i in range(self.pop_size):
             chromosome = Chromosome(self.chromosome_size, self.crossover_tax, self.mutation_chance)
-            self.verify_valid_son(chromosome)
+#            self.verify_valid_son(chromosome)
             self.population.append(chromosome)
+
+    """Calculates the actual consumption for all the chromossomes in population.
+    """
+    def calculates_load(self):
+        for chromosome in population:
+            chromosome.absolute_fitness = 0 #Total consumption of the configuration represented by the chromosome
+            chromosome.relative_fitness = 0 #Value used for minimize the problem (Inverse of the absolute_fitness)
+	        for h in range(24): #Along all day
+                for i in range(num_devices): #For all devices available
+                    chromosome.absolute_fitness += chromossome[(self.num_devices*h) + i] * self.prices[h]
 
     """ Calculate the fitness for each chromosome in "population",
         based on the route represented in the chromosome.
     """
     def fitness(self, population):
-        index = 0
         for chromosome in population:
-            chromosome.absolute_fitness = 0 #Total consumption of the configuration represented by the chromosome
-            chromosome.relative_fitness = 0 #Value used for minimize the problem (Inverse of the absolute_fitness)
-	    for i in range(1, 25):
-            	for i in range(1, num_devices + 1):
-			            chromosome.absolute_fitness += 0  #Thinking about the iteration per hour
-                	    chromosome.absolute_fitness += self.prices[int(chromosome.value[i])][int(chromosome.value[i + 1]) - 1] #At each two sequential "prices" in chromosome, adds the edge value to the fitness.
-            		    chromosome.relative_fitness = 1.0/chromosome.absolute_fitness
+            chromosome.relative_fitness = pow(chromosome.absolute_fitness - objective_value, 2) #Calculates the difference between the actual load and the objectiv load.
+            #The line above must iterate over each hour.
 
     """ Verify if the "chromosome" is a valid solution for the Traveller Salesman Problem."""
     def verify_valid_son(self, chromosome):
@@ -161,7 +164,8 @@ class GA():
 
     """ The main process of the genetic algorithm."""
     def process(self):
-        self.get_prices("cidades7.txt")
+        self.read_float_file("prices_per_hour.txt", self.prices) #Initializes prices data
+        self.read_float_file("devices_consumption.txt", self.devices_consumption) #Initializes consumption data
         self.init_pop()
         self.fitness(self.population)
         generation_index = 1

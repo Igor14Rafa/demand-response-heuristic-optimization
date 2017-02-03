@@ -8,15 +8,9 @@ class Chromosome():
         self.mutation_chance = mutation_chance
         self.relative_fitness = 0
         self.absolute_fitness = 0
-	self.consumption = []
-	self.value = []
-        #initialize the chromossome with the bits representing the devices
+	    self.value = []
         for i in range(self.chromosome_size):
-		    if random() > 0.5:
-			    self.value.append(1)
-		    else:
-			    self.value.append(0)
-
+	        self.value.append(randrange(0,2))         #initialize the chromossome with the bits representing the devices
 
     """ Implementation of the default crossover operator.
          This crossover calculates a cutpoint
@@ -28,16 +22,16 @@ class Chromosome():
         cutpoint = int(random() * self.chromosome_size)
         son_1 = Chromosome(self.chromosome_size, self.crossover_tax, self.mutation_chance)
 	    if random() < self.crossover_tax:
-        	   son_1.value = self.value[0: cutpoint] + chromosome_2.value[cutpoint: (len(self.value))]
-	else:
-		son_1.value = self.value
-        sons.append(son_1)
-        son_2 = Chromosome(self.chromosome_size, self.crossover_tax, self.mutation_chance)
+        	son_1.value = self.value[0: cutpoint] + chromosome_2.value[cutpoint: (len(self.value))]
+	    else:
+		    son_1.value = self.value
+            sons.append(son_1)
+            son_2 = Chromosome(self.chromosome_size, self.crossover_tax, self.mutation_chance)
 	    if random() < self.crossover_tax:
         	   son_2.value = chromosome_2.value[0: cutpoint] + self.value[cutpoint: (len(self.value))]
-	else:
-		son_2.value = self.value
-        sons.append(son_2)
+	    else:
+		    son_2.value = self.value
+            sons.append(son_2)
         return sons
 
     """Implementation of the default mutation operator.
@@ -49,17 +43,9 @@ class Chromosome():
         for i in range(self.chromosome_size):
             if random() < self.mutation_chance:
                 self.value[i] = abs(self.value[i] - 1)
-    
-   def get_consumption(self, filename):
-        f = open(filename, "r")
-	aux_nums = []
-        for line in f:
-            aux_nums.append(line)
-	aux_nums.pop()
-	for i in aux_nums:
-	    self.consumption.append(float(i))
-        f.close()
-
+   """
+      Read the devices's consumption data from the file.
+   """
 
     def __str__(self):
         return "Value=>{0} : Absolute Fitness=>{1}; Relative Fitness=>{2}\n".format(self.value, self.absolute_fitness, self.relative_fitness)
