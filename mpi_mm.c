@@ -1,4 +1,4 @@
-#include "mpi.h"
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,13 +38,24 @@ int main (int argc, char *argv[])
 		{
 			printf("Iniciando com %d processadores.\n", numtasks);
 			printf("Inicializando matrizes...\n");
-			for (i = 0; i < NLA; i++)
-				for (j = 0; j < NCA; j++)
+			printf("Matriz A:\n");
+			for (i = 0; i < NLA; i++){
+				printf("\n");
+				for (j = 0; j < NCA; j++){
 					a[i][j] = i + j;
-			for (i = 0; i < NCA; i++)
-				for (j = 0; j < NCB; j++)
+					printf("%6.2f", a[i][j]);
+				}
+			}
+			printf("\n");
+			printf("Matriz B:\n");
+			for (i = 0; i < NCA; i++){
+				printf("\n");
+				for (j = 0; j < NCB; j++){
 					b[i][j] = i * j;
-
+					printf("%6.2f", b[i][j]);
+				}
+			}
+			printf("\n");
 			/* Envio dos valores das matrizes para os outros processadores */
 			average_quant_row = NLA / numworkers; /*Número médio de linhas que cada procssador vai receber */
 			extra = NLA % numworkers; /* Número extra de linhas que serão distribuídas a alguns processadores*/
@@ -71,12 +82,12 @@ int main (int argc, char *argv[])
 					MPI_Recv(&rows, 1, MPI_INT, source, mtype, MPI_COMM_WORLD, &status);
 					MPI_Recv(&c[offset][0], rows * NCB, MPI_DOUBLE, source, mtype,
 							 MPI_COMM_WORLD, &status);
-					printf("Received results from task %d\n", source);
+					printf("Resposta do calculo do processador %d recebida\n", source);
 				}
 
 			/* Print results */
 			printf("******************************************************\n");
-			printf("Result Matrix:\n");
+			printf("Matriz c resultante:\n");
 			for (i = 0; i < NLA; i++)
 				{
 					printf("\n");
@@ -84,7 +95,7 @@ int main (int argc, char *argv[])
 						printf("%6.2f   ", c[i][j]);
 				}
 			printf("\n******************************************************\n");
-			printf ("Done.\n");
+			printf ("\n");
 		}
 
 
